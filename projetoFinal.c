@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <locale.h>
+#include<ctype.h>
 
 /*Grupo 11
 Gabriela Rocha da Silva - RA 211152
@@ -127,9 +128,12 @@ switch (opcao){
 				do{
 					cadastroConcessionaria(pl,qtde+1);
 					qtde++;
+					do{
 					printf("\nDeseja continuar <S/N>: ");
 					scanf("%c", &op);
 					fflush(stdin);
+					op = toupper(op);
+					}while(op!='S' && op!='N');
 					mostratotal(pl, qtde);
 					if(qtde>4){
 						system("cls");
@@ -147,9 +151,12 @@ switch (opcao){
 					scanf("%s", pconsulta);
 					fflush(stdin);
 					verificacnpj(pl, pconsulta);
+					do{
 					printf("\n\nDeseja continuar <S/N>: ");
 					scanf("%c", &op);
 					fflush(stdin);	
+					op = toupper(op);
+					}while(op!='S' && op!='N');
 				}while(op!='n' && op!='N');
 				break;
 				
@@ -163,9 +170,12 @@ switch (opcao){
 				do{
 				   	cadastroCar(pm, qtdeCar+1);
 				   	qtdeCar++;
+					do{
 				   	printf("\nDeseja continuar <S/N>: ");		
 	               	scanf("%c", &op);
 	               	fflush(stdin);
+					op = toupper(op);
+					}while(op!='S' && op!='N');
 	            	mostraCar(pm, qtdeCar);
 	               if(qtdeCar>49){
 	             	system("cls");
@@ -275,18 +285,24 @@ switch (opcao){
 						reservarVeic(pl,pm,nreg-1,pconsulta);
 						printf("\tReserva de ve�culo");
 						printf("\n\nVe�culo reservado com sucesso!\n\n");
+						do{
 						printf("Deseja continuar?<S/N>\n");
 						scanf("%c",&op);
 						fflush(stdin);
+						op = toupper(op);
+						}while(op!='S' && op!='N');
 						vm=1;
 					}//if
 					else{
 						system("cls");
 						printf("\tReserva de ve�culo");
 						printf("\n\nO ve�culo procurado n�o est� dispon�vel!\n");
+						do{
 						printf("Deseja continuar?<S/N>\n");
 						scanf("%c",&op);
 						fflush(stdin);
+						op = toupper(op);
+						}while(op!='S' && op!='N');
 						system("pause");
 					}//else
 					}while(vm!=1);
@@ -301,9 +317,12 @@ switch (opcao){
 						system("cls");
 						printf("\tReserva de ve�culo");
 						printf("\n\nEsse CNPJ n�o est� registrado no sistema!\n");
+						do{
 						printf("\nDeseja continuar?<S/N>\n");
 						scanf("%c",&op);
 						fflush(stdin);
+						op = toupper(op);
+						}while(op!='S' && op!='N');
 					}//else
 				}while(op!='n' && op!='N');
 				break;
