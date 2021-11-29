@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <locale.h>
-#include<ctype.h>
 
 /*Grupo 11
 Gabriela Rocha da Silva - RA 211152
@@ -90,6 +89,7 @@ int verificaVeic(montadora *p,int reg);
 
 void grava2(loja *p, char *str, int pos);
 void gravaCar2(montadora *p, char *str, int pos);
+int busca(loja *p, int num_reg);
 
 int main(){	
 
@@ -112,7 +112,7 @@ qtdeCar=verificaCar();
 
 do{
 system("cls");
-printf("\nMenu:\n[1]Cadastro Concession�ria\n[2]Consulta Concession�ria\n[3]Cadastro de Carros\n[4]Consulta Carro\n[5]Reservar Carro\n[6]Sa�da\n[7]Consultar historico de vendas\n\n");
+printf("\nMenu:\n[1]Cadastro Concession�ria\n[2]Consulta Concession�ria\n[3]Cadastro de Carros\n[4]Consulta Carro\n[5]Reservar Carro\n[6]Sa�da\n[8]terminar reserva\n\n");
 scanf("%i", &opcao);
 fflush(stdin);
 
@@ -128,12 +128,9 @@ switch (opcao){
 				do{
 					cadastroConcessionaria(pl,qtde+1);
 					qtde++;
-					do{
 					printf("\nDeseja continuar <S/N>: ");
 					scanf("%c", &op);
 					fflush(stdin);
-					op = toupper(op);
-					}while(op!='S' && op!='N');
 					mostratotal(pl, qtde);
 					if(qtde>4){
 						system("cls");
@@ -151,12 +148,9 @@ switch (opcao){
 					scanf("%s", pconsulta);
 					fflush(stdin);
 					verificacnpj(pl, pconsulta);
-					do{
 					printf("\n\nDeseja continuar <S/N>: ");
 					scanf("%c", &op);
 					fflush(stdin);	
-					op = toupper(op);
-					}while(op!='S' && op!='N');
 				}while(op!='n' && op!='N');
 				break;
 				
@@ -170,12 +164,9 @@ switch (opcao){
 				do{
 				   	cadastroCar(pm, qtdeCar+1);
 				   	qtdeCar++;
-					do{
 				   	printf("\nDeseja continuar <S/N>: ");		
 	               	scanf("%c", &op);
 	               	fflush(stdin);
-					op = toupper(op);
-					}while(op!='S' && op!='N');
 	            	mostraCar(pm, qtdeCar);
 	               if(qtdeCar>49){
 	             	system("cls");
@@ -274,7 +265,6 @@ switch (opcao){
 					 	system("pause");
 						}
 					 	
-					do{
 						system("cls");
 						printf("\tReserva de ve�culo");
 						printf("\n\nN�mero de registro do ve�culo desejado: ");
@@ -285,27 +275,20 @@ switch (opcao){
 						reservarVeic(pl,pm,nreg-1,pconsulta);
 						printf("\tReserva de ve�culo");
 						printf("\n\nVe�culo reservado com sucesso!\n\n");
-						do{
 						printf("Deseja continuar?<S/N>\n");
 						scanf("%c",&op);
 						fflush(stdin);
-						op = toupper(op);
-						}while(op!='S' && op!='N');
 						vm=1;
 					}//if
 					else{
 						system("cls");
 						printf("\tReserva de ve�culo");
 						printf("\n\nO ve�culo procurado n�o est� dispon�vel!\n");
-						do{
 						printf("Deseja continuar?<S/N>\n");
 						scanf("%c",&op);
 						fflush(stdin);
-						op = toupper(op);
-						}while(op!='S' && op!='N');
 						system("pause");
 					}//else
-					}while(vm!=1);
 					}//if verifica cnpj carro
 					else if(verificacnpjCar(pl, pconsulta)==8){
 						system("cls");
@@ -317,27 +300,14 @@ switch (opcao){
 						system("cls");
 						printf("\tReserva de ve�culo");
 						printf("\n\nEsse CNPJ n�o est� registrado no sistema!\n");
-						do{
 						printf("\nDeseja continuar?<S/N>\n");
 						scanf("%c",&op);
 						fflush(stdin);
-						op = toupper(op);
-						}while(op!='S' && op!='N');
 					}//else
 				}while(op!='n' && op!='N');
 				break;
-	case 7:
-	do{
-		system("cls");
-		printf("Deseja consultar por concessionaria[1] ou por modelo de carro[2]?");
-		scanf("%i", &opParcial);
-		fflush(stdin);
-	}while(opParcial!=1 && opParcial!=2);
-	if(opParcial==1){
-		//consulta por concessionaria
-	}else{
-		//consulta por modelo
-	}
+	case 8:
+
 		break;
 }//switch opcao
 }while(opcao!=6);
@@ -650,55 +620,42 @@ void reservarVeic(loja *p, montadora *pm, int nreg, char *pcon){
 	FILE *fptr=NULL;
 	int i, aux, pos;
 	aux=verifica();
+	pos=busca(p, nreg);
 	
-	if((fptr=fopen("concessionaria.bin","rb"))==NULL)
-		printf("\nErro");
-	else{
-		
-		for(i=0;i<aux;i++){
+	if(pos==-1)
+			printf("\nRegistro invalido\n\n");
+		else{
+			p->reserved++;
 			
-			fseek(fptr,i*sizeof(struct loja),0);
-  			fread(p,sizeof(struct loja),1,fptr);
-  			
-  			if(strcmp(p->CNPJ, pcon)==0){
-  				pos=i;
-  				p->reserved+=1;
-  				if(p->reserved<=1){
+			if(p->reserved==1){
   					if(p->tabela[0].reservado.sigla=='L'){
   						p->tabela[0].reservado.sigla='R';
   						p->tabela[0].reservado.regcarro=nreg;
 					}
 				}
-  				else if(p->reserved<=2){
+  			else if(p->reserved==2){
   					if(p->tabela[1].reservado.sigla=='L'){
   						p->tabela[1].reservado.sigla='R';
   						p->tabela[1].reservado.regcarro=nreg;
 					}
 				}
-				else if(p->reserved<=3){
+			else if(p->reserved==3){
   					if(p->tabela[2].reservado.sigla=='L'){
   						p->tabela[2].reservado.sigla='R';
   						p->tabela[2].reservado.regcarro=nreg;
 					}
 				}
-			}//if
-			fclose(fptr);
-		}//else	
-
-
-	FILE *fptr2=NULL;
-	if((fptr2=fopen("carro.bin","rb"))==NULL)
-		printf("\nErro");
-	else{
- 		
+			}//else
+	
 		pm->status.sigla='R';
-  		pm->status.reserva.CNPJ[19]=*pcon;
-  		fclose(fptr2);
-    }//else	
-    grava2(p, "rb+", pos);
-    gravaCar2(pm, "rb+", nreg);
+		strcpy(pm->status.reserva.CNPJ, p->CNPJ);
+  	  		
+  		grava2(p, "rb+", pos);
+    	gravaCar2(pm, "rb+", nreg);
+	
+	
 }//reservar veiculo
-}
+
 int verificaVeic(montadora *p,int reg){
 	FILE *fptr=NULL;
 	if((fptr=fopen("carro.bin","rb"))==NULL)
@@ -739,34 +696,27 @@ void gravaCar2(montadora *p, char *str, int pos){
 fclose(fptr);
 }//grava car
 
-int consultarHistoricoConcessionaria(loja *p, char *pcon){
-	int aux,i;
-		FILE *fptr=NULL;
-		aux=verifica();
 
-		if((fptr=fopen("concessionaria.bin","rb"))==NULL)
-			printf("\nErro");
-		
-		else{
-			for(i=0;i<aux;i++){
-				fseek(fptr,i*sizeof(struct loja),0);
-				fread(p,sizeof(struct loja),1,fptr);
-				
-				if(strcmp(p->CNPJ, pcon)==0){
-					if(p->reserved>=3){
-						return 8;   //nao pode executar
-					}
-					else{
-						return 7;
-					}
-				}//if
-			}//for
+int busca(loja *p, int num_reg){
+	FILE *fptr=NULL;
+	int qreg, achou=-1, i;
+	qreg=verifica();
+	system("cls");
+	if((fptr=fopen("concessionaria.bin", "rb"))==NULL)
+		printf("\nErro");
+	else{
+		for(i=0; i<qreg; i++){
+			fseek(fptr, i*sizeof(loja), 0);  //a partir de zero
+			fread(p, sizeof(loja), 1, fptr);
+			if(p->regloja==num_reg){
+				achou=i;
+				i=qreg;  //forcar saida do for
+			}//if
+		}//for
 		fclose(fptr);
 	}//else	
-
-}
-
-void consultarHistoricoModelo(){}
+	return achou; //posicao do registro
+}//busca
 
 
 
