@@ -112,7 +112,7 @@ qtdeCar=verificaCar();
 
 do{
 system("cls");
-printf("\nMenu:\n[1]Cadastro Concession�ria\n[2]Consulta Concession�ria\n[3]Cadastro de Carros\n[4]Consulta Carro\n[5]Reservar Carro\n[6]Sa�da\n\n");
+printf("\nMenu:\n[1]Cadastro Concession�ria\n[2]Consulta Concession�ria\n[3]Cadastro de Carros\n[4]Consulta Carro\n[5]Reservar Carro\n[6]Sa�da\n[7]Consultar historico de vendas\n\n");
 scanf("%i", &opcao);
 fflush(stdin);
 
@@ -326,6 +326,19 @@ switch (opcao){
 					}//else
 				}while(op!='n' && op!='N');
 				break;
+	case 7:
+	do{
+		system("cls");
+		printf("Deseja consultar por concessionaria[1] ou por modelo de carro[2]?");
+		scanf("%i", &opParcial);
+		fflush(stdin);
+	}while(opParcial!=1 && opParcial!=2);
+	if(opParcial==1){
+		//consulta por concessionaria
+	}else{
+		//consulta por modelo
+	}
+		break;
 }//switch opcao
 }while(opcao!=6);
 return 0;
@@ -725,6 +738,35 @@ void gravaCar2(montadora *p, char *str, int pos){
 	}//else		
 fclose(fptr);
 }//grava car
+
+int consultarHistoricoConcessionaria(loja *p, char *pcon){
+	int aux,i;
+		FILE *fptr=NULL;
+		aux=verifica();
+
+		if((fptr=fopen("concessionaria.bin","rb"))==NULL)
+			printf("\nErro");
+		
+		else{
+			for(i=0;i<aux;i++){
+				fseek(fptr,i*sizeof(struct loja),0);
+				fread(p,sizeof(struct loja),1,fptr);
+				
+				if(strcmp(p->CNPJ, pcon)==0){
+					if(p->reserved>=3){
+						return 8;   //nao pode executar
+					}
+					else{
+						return 7;
+					}
+				}//if
+			}//for
+		fclose(fptr);
+	}//else	
+
+}
+
+void consultarHistoricoModelo(){}
 
 
 
